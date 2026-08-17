@@ -17,6 +17,8 @@ public:
     DualStreamDock(QWidget* parent = nullptr);
     ~DualStreamDock();
 
+    static void render_preview(void *data, uint32_t cx, uint32_t cy);
+
     void handle_main_scene_changed(obs_source_t* main_scene);
 
 private slots:
@@ -55,6 +57,4 @@ private:
     QLabel* v_status_lbl;
 
     QTimer* status_timer;
-
-    static void render_preview(void *data, uint32_t cx, uint32_t cy);
 };

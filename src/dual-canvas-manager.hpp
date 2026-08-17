@@ -21,6 +21,7 @@ public:
     obs_source_t* get_vertical_scene_source() const { return v_scene_source; }
 
 private:
+    obs_video_info v_ovi;
     std::string v_scene_name;
     obs_source_t* v_scene_source = nullptr;
 };
