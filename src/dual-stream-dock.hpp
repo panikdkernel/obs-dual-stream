@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QDockWidget>
+#include <QWidget>
 #include <QComboBox>
 #include <QPushButton>
 #include <QLabel>
@@ -10,7 +10,7 @@
 #include "stream-output.hpp"
 #include "settings.hpp"
 
-class DualStreamDock : public QDockWidget {
+class DualStreamDock : public QWidget {
     Q_OBJECT
 
 public:

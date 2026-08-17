@@ -17,7 +17,7 @@ static void my_frontend_event_cb(enum obs_frontend_event event, void *private_da
         QMainWindow *main_window = (QMainWindow *)obs_frontend_get_main_window();
         if (main_window) {
             dock = new DualStreamDock(main_window);
-            obs_frontend_add_custom_qdock("DualStreamDock", dock);
+            obs_frontend_add_dock_by_id("DualStreamDock", "Dual Stream", dock);
         }
     }
 }

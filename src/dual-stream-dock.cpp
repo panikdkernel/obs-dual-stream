@@ -6,10 +6,9 @@
 #include <QMessageBox>
 
 DualStreamDock::DualStreamDock(QWidget* parent)
-    : QDockWidget("Dual Stream", parent)
+    : QWidget(parent)
 {
     setObjectName("DualStreamDock");
-    setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
     h_output = new StreamOutput("dual_horizontal");
     v_output = new StreamOutput("dual_vertical");
@@ -79,7 +78,9 @@ void DualStreamDock::setup_ui() {
     QPushButton* refresh_btn = new QPushButton("Refresh Scenes");
     main_layout->addWidget(refresh_btn);
 
-    setWidget(main_widget);
+    QVBoxLayout* wrapper_layout = new QVBoxLayout(this);
+    wrapper_layout->setContentsMargins(0, 0, 0, 0);
+    wrapper_layout->addWidget(main_widget);
 
     connect(start_h_btn, &QPushButton::clicked, this, &DualStreamDock::on_start_h_clicked);
     connect(start_v_btn, &QPushButton::clicked, this, &DualStreamDock::on_start_v_clicked);
