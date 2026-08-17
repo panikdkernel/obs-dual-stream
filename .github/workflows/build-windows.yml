@@ -37,7 +37,7 @@ jobs:
 
       - name: Download and Extract obs-deps
         run: |
-          Invoke-WebRequest -Uri "https://github.com/obsproject/obs-deps/releases/download/2024-03-19/windows-x64.zip" -OutFile "obs-deps.zip"
+          Invoke-WebRequest -Uri "https://github.com/obsproject/obs-deps/releases/download/2024-03-19/windows-deps-2024-03-19-x64.zip" -OutFile "obs-deps.zip"
           Expand-Archive -Path "obs-deps.zip" -DestinationPath "${{ github.workspace }}/prebuilt-obs-deps"
         shell: pwsh
 
