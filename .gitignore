@@ -1,0 +1,10 @@
+build/
+build_*/
+.DS_Store
+*.pdb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vscode/
+.vs/

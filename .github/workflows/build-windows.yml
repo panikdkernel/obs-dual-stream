@@ -1,0 +1,71 @@
+name: Build Windows DLL
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  OBS_VERSION: "30.1.2"
+  QT_VERSION: "6.5.3"
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout Plugin
+        uses: actions/checkout@v4
+        with:
+          path: plugin
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          arch: 'win64_msvc2019_64'
+          modules: 'qtcore qtwidgets'
+
+      - name: Checkout OBS Studio
+        uses: actions/checkout@v4
+        with:
+          repository: obsproject/obs-studio
+          path: obs-studio
+          ref: ${{ env.OBS_VERSION }}
+          submodules: recursive
+
+      - name: Configure OBS Studio
+        run: |
+          cmake -S obs-studio -B obs-studio/build -G "Visual Studio 17 2022" -A x64 `
+            -DENABLE_UI=OFF -DENABLE_PLUGINS=OFF -DENABLE_FRONTEND=OFF `
+            -DENABLE_SCRIPTING=OFF
+        shell: pwsh
+
+      - name: Build OBS Studio Dependencies
+        run: |
+          cmake --build obs-studio/build --config Release --target obs-frontend-api --parallel
+        shell: pwsh
+
+      - name: Install OBS Studio (Development files)
+        run: |
+          cmake --install obs-studio/build --component Development --config Release --prefix "${{ github.workspace }}/obs-deps"
+        shell: pwsh
+
+      - name: Configure Plugin
+        run: |
+          cmake -S plugin -B plugin/build -G "Visual Studio 17 2022" -A x64 `
+            -DCMAKE_PREFIX_PATH="${{ github.workspace }}/obs-deps;${{ env.Qt6_DIR }}"
+        shell: pwsh
+
+      - name: Build Plugin
+        run: |
+          cmake --build plugin/build --config Release --parallel
+        shell: pwsh
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: obs-dual-stream-windows
+          path: plugin/build/Release/obs-dual-stream.dll
