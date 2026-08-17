@@ -31,11 +31,9 @@ private slots:
     void load_settings();
     
     void update_status();
-    void refresh_scenes();
 
 private:
     void setup_ui();
-    void populate_scenes(QComboBox* box, const QString& current);
 
     DualCanvasManager canvas_manager;
 
