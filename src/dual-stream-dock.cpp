@@ -72,13 +72,10 @@ void DualStreamDock::setup_ui() {
     
     main_layout->addWidget(preview_widget);
     
-    auto create_section = [this](const QString& title, QComboBox*& scene_box, QLineEdit*& server, QLineEdit*& key, QLineEdit*& bitrate, QPushButton*& btn, QLabel*& status) {
+    auto create_section = [this](const QString& title, QLineEdit*& server, QLineEdit*& key, QLineEdit*& bitrate, QPushButton*& btn, QLabel*& status) {
         QGroupBox* box = new QGroupBox(title);
         QFormLayout* layout = new QFormLayout(box);
         
-        scene_box = new QComboBox();
-        layout->addRow("Scene:", scene_box);
-
         server = new QLineEdit();
         layout->addRow("Server:", server);
 
@@ -98,19 +95,14 @@ void DualStreamDock::setup_ui() {
         return box;
     };
 
-    main_layout->addWidget(create_section("VERTICAL STREAM (1080x1920)", v_scene_box, v_server_edit, v_key_edit, v_bitrate_edit, start_v_btn, v_status_lbl));
+    main_layout->addWidget(create_section("VERTICAL STREAM (1080x1920)", v_server_edit, v_key_edit, v_bitrate_edit, start_v_btn, v_status_lbl));
 
-    QPushButton* refresh_btn = new QPushButton("Refresh Scenes");
-    main_layout->addWidget(refresh_btn);
-
-    QVBoxLayout* wrapper_layout = new QVBoxLayout(this);
+    QWidget* wrapper_widget = new QWidget();
+    QVBoxLayout* wrapper_layout = new QVBoxLayout(wrapper_widget);
     wrapper_layout->setContentsMargins(0, 0, 0, 0);
     wrapper_layout->addWidget(main_widget);
 
     connect(start_v_btn, &QPushButton::clicked, this, &DualStreamDock::on_start_v_clicked);
-    connect(refresh_btn, &QPushButton::clicked, this, &DualStreamDock::refresh_scenes);
-
-    connect(v_scene_box, &QComboBox::currentTextChanged, this, &DualStreamDock::on_v_scene_changed);
 
     add_display(preview_widget, &display, this);
 }
@@ -137,47 +129,20 @@ static bool enum_scenes(void* param, obs_source_t* source) {
     return true;
 }
 
-void DualStreamDock::populate_scenes(QComboBox* box, const QString& current) {
-    box->blockSignals(true);
-    box->clear();
-    
-    QStringList scenes;
-    obs_enum_sources(
-        [](void* param, obs_source_t* source) {
-            if (strcmp(obs_source_get_id(source), "scene") == 0) {
-                QStringList* list = static_cast<QStringList*>(param);
-                list->append(obs_source_get_name(source));
-            }
-            return true;
-        },
-        &scenes
-    );
-    
-    box->addItems(scenes);
-    int idx = box->findText(current);
-    if (idx >= 0) box->setCurrentIndex(idx);
-    
-    box->blockSignals(false);
-}
-
-void DualStreamDock::refresh_scenes() {
-    populate_scenes(v_scene_box, QString::fromStdString(config.v_scene));
-}
-
 void DualStreamDock::on_v_scene_changed(const QString& scene) {
     config.v_scene = scene.toStdString();
     canvas_manager.set_vertical_scene(config.v_scene);
 }
 
-void DualStreamDock::handle_main_scene_changed(obs_source_t* main_scene) {
-    if (!main_scene) return;
+std::string DualStreamDock::handle_main_scene_changed(obs_source_t* main_scene) {
+    if (!main_scene) return "";
     
     const char* name = obs_source_get_name(main_scene);
-    if (!name) return;
+    if (!name) return "";
     
     // Avoid infinite loop if somehow a vertical scene becomes the main scene
     std::string sname(name);
-    if (sname.find(" - Vertical") != std::string::npos) return;
+    if (sname.find(" - Vertical") != std::string::npos) return "";
     
     std::string v_name = sname + " - Vertical";
     
@@ -194,12 +159,7 @@ void DualStreamDock::handle_main_scene_changed(obs_source_t* main_scene) {
         obs_source_release(existing);
     }
     
-    refresh_scenes();
-    
-    int idx = v_scene_box->findText(QString::fromStdString(v_name));
-    if (idx >= 0) {
-        v_scene_box->setCurrentIndex(idx);
-    }
+    return v_name;
 }
 
 void DualStreamDock::on_start_v_clicked() {

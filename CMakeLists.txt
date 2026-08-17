@@ -25,6 +25,8 @@ add_library(obs-dual-stream MODULE
     src/dual-stream-dock.hpp
     src/settings.cpp
     src/settings.hpp
+    src/vertical-scenes-dock.cpp
+    src/vertical-scenes-dock.hpp
 )
 
 target_include_directories(obs-dual-stream PRIVATE src)
