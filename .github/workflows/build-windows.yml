@@ -26,7 +26,6 @@ jobs:
         with:
           version: ${{ env.QT_VERSION }}
           arch: 'win64_msvc2019_64'
-          modules: 'qtcore qtwidgets'
 
       - name: Checkout OBS Studio
         uses: actions/checkout@v4
