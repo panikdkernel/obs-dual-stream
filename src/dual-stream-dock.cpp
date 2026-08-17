@@ -31,7 +31,6 @@ DualStreamDock::DualStreamDock(QWidget* parent)
 
     setup_ui();
     load_settings();
-    refresh_scenes();
 
     canvas_manager.set_vertical_resolution(config.v_width, config.v_height);
     canvas_manager.set_vertical_fps(config.v_fps_num, config.v_fps_den);
@@ -123,11 +122,6 @@ void DualStreamDock::save_settings() {
     SettingsManager::save(config);
 }
 
-static bool enum_scenes(void* param, obs_source_t* source) {
-    QStringList* list = static_cast<QStringList*>(param);
-    list->append(obs_source_get_name(source));
-    return true;
-}
 
 void DualStreamDock::on_v_scene_changed(const QString& scene) {
     config.v_scene = scene.toStdString();
