@@ -45,8 +45,9 @@ jobs:
           Expand-Archive -Path "obs-deps.zip" -DestinationPath "${{ github.workspace }}/prebuilt-obs-deps"
         shell: pwsh
 
+      # FIXED: Changed -DENABLE_UI and -DENABLE_FRONTEND to ON so obs-frontend-api gets built and installed
       - name: Configure OBS Studio
-        run: cmake -S obs-studio -B obs-studio/build -G "Visual Studio 17 2022" -A x64 -DENABLE_UI=OFF -DENABLE_PLUGINS=OFF -DENABLE_FRONTEND=OFF -DENABLE_SCRIPTING=OFF -DCMAKE_PREFIX_PATH="${{ github.workspace }}/prebuilt-obs-deps;${{ github.workspace }}/prebuilt-obs-deps/bin;${{ env.Qt6_DIR }}"
+        run: cmake -S obs-studio -B obs-studio/build -G "Visual Studio 17 2022" -A x64 -DENABLE_UI=ON -DENABLE_FRONTEND=ON -DENABLE_PLUGINS=OFF -DENABLE_SCRIPTING=OFF -DCMAKE_PREFIX_PATH="${{ github.workspace }}/prebuilt-obs-deps;${{ github.workspace }}/prebuilt-obs-deps/bin;${{ env.Qt6_DIR }}"
         shell: bash
 
       - name: Build OBS Studio Dependencies
