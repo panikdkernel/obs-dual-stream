@@ -6,10 +6,6 @@
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE("obs-dual-stream", "en-US")
-MODULE_EXPORT const char *obs_module_description(void)
-{
-    return "OBS Dual Stream Plugin (Horizontal and Vertical)";
-}
 
 static DualStreamDock *dock = nullptr;
 
@@ -26,17 +22,24 @@ static void my_frontend_event_cb(enum obs_frontend_event event, void *private_da
     }
 }
 
-MODULE_EXPORT bool obs_module_load(void)
-{
-    obs_frontend_add_event_callback(my_frontend_event_cb, nullptr);
-    return true;
-}
+extern "C" {
+    MODULE_EXPORT const char *obs_module_description(void)
+    {
+        return "OBS Dual Stream Plugin (Horizontal and Vertical)";
+    }
 
-MODULE_EXPORT void obs_module_unload(void)
-{
-    if (dock) {
-        obs_frontend_remove_dock("DualStreamDock");
-        delete dock;
-        dock = nullptr;
+    MODULE_EXPORT bool obs_module_load(void)
+    {
+        obs_frontend_add_event_callback(my_frontend_event_cb, nullptr);
+        return true;
+    }
+
+    MODULE_EXPORT void obs_module_unload(void)
+    {
+        if (dock) {
+            obs_frontend_remove_dock("DualStreamDock");
+            delete dock;
+            dock = nullptr;
+        }
     }
 }
