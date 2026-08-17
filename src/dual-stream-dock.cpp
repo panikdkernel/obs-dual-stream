@@ -10,22 +10,17 @@ DualStreamDock::DualStreamDock(QWidget* parent)
 {
     setObjectName("DualStreamDock");
 
-    h_output = new StreamOutput("dual_horizontal");
     v_output = new StreamOutput("dual_vertical");
 
     setup_ui();
     load_settings();
     refresh_scenes();
 
-    canvas_manager.set_horizontal_resolution(config.h_width, config.h_height);
     canvas_manager.set_vertical_resolution(config.v_width, config.v_height);
-    canvas_manager.set_horizontal_fps(config.h_fps_num, config.h_fps_den);
     canvas_manager.set_vertical_fps(config.v_fps_num, config.v_fps_den);
 
-    canvas_manager.create_horizontal_canvas();
     canvas_manager.create_vertical_canvas();
     
-    canvas_manager.set_horizontal_scene(config.h_scene.c_str());
     canvas_manager.set_vertical_scene(config.v_scene.c_str());
 
     status_timer = new QTimer(this);
@@ -35,7 +30,6 @@ DualStreamDock::DualStreamDock(QWidget* parent)
 
 DualStreamDock::~DualStreamDock() {
     save_settings();
-    delete h_output;
     delete v_output;
 }
 
@@ -69,11 +63,7 @@ void DualStreamDock::setup_ui() {
         return box;
     };
 
-    main_layout->addWidget(create_section("HORIZONTAL (1920x1080)", h_scene_box, h_server_edit, h_key_edit, h_bitrate_edit, start_h_btn, h_status_lbl));
-    main_layout->addWidget(create_section("VERTICAL (1080x1920)", v_scene_box, v_server_edit, v_key_edit, v_bitrate_edit, start_v_btn, v_status_lbl));
-
-    start_both_btn = new QPushButton("START BOTH STREAMS");
-    main_layout->addWidget(start_both_btn);
+    main_layout->addWidget(create_section("VERTICAL STREAM (1080x1920)", v_scene_box, v_server_edit, v_key_edit, v_bitrate_edit, start_v_btn, v_status_lbl));
 
     QPushButton* refresh_btn = new QPushButton("Refresh Scenes");
     main_layout->addWidget(refresh_btn);
@@ -82,21 +72,14 @@ void DualStreamDock::setup_ui() {
     wrapper_layout->setContentsMargins(0, 0, 0, 0);
     wrapper_layout->addWidget(main_widget);
 
-    connect(start_h_btn, &QPushButton::clicked, this, &DualStreamDock::on_start_h_clicked);
     connect(start_v_btn, &QPushButton::clicked, this, &DualStreamDock::on_start_v_clicked);
-    connect(start_both_btn, &QPushButton::clicked, this, &DualStreamDock::on_start_both_clicked);
     connect(refresh_btn, &QPushButton::clicked, this, &DualStreamDock::refresh_scenes);
 
-    connect(h_scene_box, &QComboBox::currentTextChanged, this, &DualStreamDock::on_h_scene_changed);
     connect(v_scene_box, &QComboBox::currentTextChanged, this, &DualStreamDock::on_v_scene_changed);
 }
 
 void DualStreamDock::load_settings() {
     config = SettingsManager::load();
-
-    h_server_edit->setText(QString::fromStdString(config.h_server));
-    h_key_edit->setText(QString::fromStdString(config.h_key));
-    h_bitrate_edit->setText(QString::number(config.h_bitrate));
 
     v_server_edit->setText(QString::fromStdString(config.v_server));
     v_key_edit->setText(QString::fromStdString(config.v_key));
@@ -104,10 +87,6 @@ void DualStreamDock::load_settings() {
 }
 
 void DualStreamDock::save_settings() {
-    config.h_server = h_server_edit->text().toStdString();
-    config.h_key = h_key_edit->text().toStdString();
-    config.h_bitrate = h_bitrate_edit->text().toInt();
-
     config.v_server = v_server_edit->text().toStdString();
     config.v_key = v_key_edit->text().toStdString();
     config.v_bitrate = v_bitrate_edit->text().toInt();
@@ -145,28 +124,12 @@ void DualStreamDock::populate_scenes(QComboBox* box, const QString& current) {
 }
 
 void DualStreamDock::refresh_scenes() {
-    populate_scenes(h_scene_box, QString::fromStdString(config.h_scene));
     populate_scenes(v_scene_box, QString::fromStdString(config.v_scene));
-}
-
-void DualStreamDock::on_h_scene_changed(const QString& scene) {
-    config.h_scene = scene.toStdString();
-    canvas_manager.set_horizontal_scene(config.h_scene);
 }
 
 void DualStreamDock::on_v_scene_changed(const QString& scene) {
     config.v_scene = scene.toStdString();
     canvas_manager.set_vertical_scene(config.v_scene);
-}
-
-void DualStreamDock::on_start_h_clicked() {
-    save_settings();
-    if (h_output->is_active()) {
-        h_output->stop();
-    } else {
-        h_output->initialize(config.h_width, config.h_height, config.h_fps_num, config.h_fps_den, config.h_bitrate, config.h_server, config.h_key);
-        h_output->start();
-    }
 }
 
 void DualStreamDock::on_start_v_clicked() {
@@ -177,11 +140,6 @@ void DualStreamDock::on_start_v_clicked() {
         v_output->initialize(config.v_width, config.v_height, config.v_fps_num, config.v_fps_den, config.v_bitrate, config.v_server, config.v_key);
         v_output->start();
     }
-}
-
-void DualStreamDock::on_start_both_clicked() {
-    if (!h_output->is_active()) on_start_h_clicked();
-    if (!v_output->is_active()) on_start_v_clicked();
 }
 
 void DualStreamDock::update_status() {
@@ -195,9 +153,7 @@ void DualStreamDock::update_status() {
         }
     };
 
-    h_status_lbl->setText(format_status(h_output));
     v_status_lbl->setText(format_status(v_output));
     
-    start_h_btn->setText(h_output->is_active() ? "Stop" : "Start");
     start_v_btn->setText(v_output->is_active() ? "Stop" : "Start");
 }

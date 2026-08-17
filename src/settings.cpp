@@ -7,26 +7,7 @@ DualStreamConfig SettingsManager::load() {
     config_t* cfg = obs_frontend_get_profile_config();
     if (!cfg) return config;
 
-    config.h_width = config_get_default_int(cfg, "DualStream", "h_width");
-    if (config.h_width == 0) config.h_width = 1920;
-    else config.h_width = config_get_int(cfg, "DualStream", "h_width");
-
-    config.h_height = config_get_default_int(cfg, "DualStream", "h_height");
-    if (config.h_height == 0) config.h_height = 1080;
-    else config.h_height = config_get_int(cfg, "DualStream", "h_height");
-    
-    config.h_bitrate = config_get_default_int(cfg, "DualStream", "h_bitrate");
-    if (config.h_bitrate == 0) config.h_bitrate = 8000;
-    else config.h_bitrate = config_get_int(cfg, "DualStream", "h_bitrate");
-
-    const char* h_scene = config_get_string(cfg, "DualStream", "h_scene");
-    if (h_scene) config.h_scene = h_scene;
-
-    const char* h_server = config_get_string(cfg, "DualStream", "h_server");
-    if (h_server) config.h_server = h_server;
-
-    const char* h_key = config_get_string(cfg, "DualStream", "h_key");
-    if (h_key) config.h_key = h_key;
+    // Vertical
 
     // Vertical
     config.v_width = config_get_default_int(cfg, "DualStream", "v_width");
@@ -57,12 +38,6 @@ void SettingsManager::save(const DualStreamConfig& config) {
     config_t* cfg = obs_frontend_get_profile_config();
     if (!cfg) return;
 
-    config_set_int(cfg, "DualStream", "h_width", config.h_width);
-    config_set_int(cfg, "DualStream", "h_height", config.h_height);
-    config_set_int(cfg, "DualStream", "h_bitrate", config.h_bitrate);
-    config_set_string(cfg, "DualStream", "h_scene", config.h_scene.c_str());
-    config_set_string(cfg, "DualStream", "h_server", config.h_server.c_str());
-    config_set_string(cfg, "DualStream", "h_key", config.h_key.c_str());
 
     config_set_int(cfg, "DualStream", "v_width", config.v_width);
     config_set_int(cfg, "DualStream", "v_height", config.v_height);
