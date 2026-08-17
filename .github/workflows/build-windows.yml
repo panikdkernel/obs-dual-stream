@@ -58,7 +58,7 @@ jobs:
         shell: bash
 
       - name: Configure Plugin
-        run: cmake -S plugin -B plugin/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH="${{ github.workspace }}/obs-studio/build;${{ github.workspace }}/obs-deps;${{ github.workspace }}/prebuilt-obs-deps;${{ env.Qt6_DIR }}"
+        run: cmake -S plugin -B plugin/build -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH="${{ github.workspace }}/obs-studio/build;${{ github.workspace }}/obs-studio/build/deps/w32-pthreads;${{ github.workspace }}/obs-deps;${{ github.workspace }}/prebuilt-obs-deps;${{ env.Qt6_DIR }}"
         shell: bash
 
       - name: Build Plugin
