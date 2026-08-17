@@ -26,13 +26,13 @@ static void my_frontend_event_cb(enum obs_frontend_event event, void *private_da
     }
 }
 
-bool obs_module_load(void)
+MODULE_EXPORT bool obs_module_load(void)
 {
     obs_frontend_add_event_callback(my_frontend_event_cb, nullptr);
     return true;
 }
 
-void obs_module_unload(void)
+MODULE_EXPORT void obs_module_unload(void)
 {
     if (dock) {
         obs_frontend_remove_dock("DualStreamDock");
