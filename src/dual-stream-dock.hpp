@@ -17,6 +17,8 @@ public:
     DualStreamDock(QWidget* parent = nullptr);
     ~DualStreamDock();
 
+    void handle_main_scene_changed(obs_source_t* main_scene);
+
 private slots:
     void on_start_v_clicked();
     
@@ -39,7 +41,9 @@ private:
     DualStreamConfig config;
 
     // UI Elements
-
+    QWidget* preview_widget;
+    obs_display_t* display = nullptr;
+    
     QComboBox* v_scene_box;
     
     QLineEdit* v_server_edit;
@@ -51,4 +55,6 @@ private:
     QLabel* v_status_lbl;
 
     QTimer* status_timer;
+
+    static void render_preview(void *data, uint32_t cx, uint32_t cy);
 };

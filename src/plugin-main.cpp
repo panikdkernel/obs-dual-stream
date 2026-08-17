@@ -19,6 +19,14 @@ static void my_frontend_event_cb(enum obs_frontend_event event, void *private_da
             dock = new DualStreamDock(main_window);
             obs_frontend_add_dock_by_id("DualStreamDock", "Dual Stream", dock);
         }
+    } else if (event == OBS_FRONTEND_EVENT_SCENE_CHANGED) {
+        if (dock) {
+            obs_source_t *current_scene = obs_frontend_get_current_scene();
+            if (current_scene) {
+                dock->handle_main_scene_changed(current_scene);
+                obs_source_release(current_scene);
+            }
+        }
     }
 }
 

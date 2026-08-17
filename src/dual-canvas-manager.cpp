@@ -18,6 +18,10 @@ bool DualCanvasManager::initialize() {
 }
 
 void DualCanvasManager::destroy() {
+    if (v_scene_source) {
+        obs_source_release(v_scene_source);
+        v_scene_source = nullptr;
+    }
 }
 
 bool DualCanvasManager::create_vertical_canvas() {
@@ -39,5 +43,8 @@ void DualCanvasManager::set_vertical_fps(int fps_num, int fps_den) {
 
 void DualCanvasManager::set_vertical_scene(const std::string& scene_name) {
     v_scene_name = scene_name;
-    // Fallback mode: switching main scene not handled safely here
+    if (v_scene_source) {
+        obs_source_release(v_scene_source);
+    }
+    v_scene_source = obs_get_source_by_name(scene_name.c_str());
 }
