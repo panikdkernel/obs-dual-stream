@@ -35,6 +35,10 @@ jobs:
           ref: ${{ env.OBS_VERSION }}
           submodules: recursive
 
+      - name: Patch OBS Studio libobs-d3d11
+        run: echo '#pragma comment(lib, "d3dcompiler.lib")' >> obs-studio/libobs-d3d11/d3d11-shader.cpp
+        shell: bash
+
       - name: Download and Extract obs-deps
         run: |
           Invoke-WebRequest -Uri "https://github.com/obsproject/obs-deps/releases/download/2024-03-19/windows-deps-2024-03-19-x64.zip" -OutFile "obs-deps.zip"
